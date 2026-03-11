@@ -48,7 +48,7 @@ L'itinerary_planner doit renvoyer un itinéraire structuré avec la structure su
 **Durée :** [Nombre de jours]
 **Dates :** [travel_dates]
 **Hébergement recommandé :** [Nom de l'hôtel recommandé basé sur hotel_search_output]
-**Vol recommandé :** [Résumé du vol recommandé basé sur flight_search_output]
+**Vol recommandé :** [Résumé du vol recommandé basé sur transport_search_output]
 
 Pour chaque jour du voyage :
 

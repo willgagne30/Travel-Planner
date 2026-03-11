@@ -6,12 +6,12 @@ from google.adk.agents import LlmAgent
 from google.adk.tools.agent_tool import AgentTool
 
 from . import prompt
-from .sub_agents.flight_search import flight_search_agent
+from .sub_agents.transport_search import transport_search_agent
 from .sub_agents.hotel_search import hotel_search_agent
 from .sub_agents.activity_search import activity_search_agent
 from .sub_agents.itinerary_planner import itinerary_planner_agent
 
-MODEL = os.getenv("GOOGLE_MODEL", "gemini-2.5-pro")
+MODEL = os.getenv("GOOGLE_MODEL", "gemini-3.1-flash-lite-preview")
 
 
 travel_coordinator = LlmAgent(
@@ -20,13 +20,13 @@ travel_coordinator = LlmAgent(
     description=(
         "guider les utilisateurs à travers un processus structuré pour planifier "
         "un voyage complet en orchestrant une série de sous-agents experts. les aider à "
-        "rechercher des vols, trouver des hébergements, découvrir des activités, "
+        "rechercher des moyens de transport, trouver des hébergements, découvrir des activités, "
         "et générer un itinéraire jour par jour personnalisé."
     ),
     instruction=prompt.TRAVEL_COORDINATOR_PROMPT,
     output_key="travel_coordinator_output",
     tools=[
-        AgentTool(agent=flight_search_agent),
+        AgentTool(agent=transport_search_agent),
         AgentTool(agent=hotel_search_agent),
         AgentTool(agent=activity_search_agent),
         AgentTool(agent=itinerary_planner_agent),
