@@ -5,6 +5,7 @@ from .activities import search_attractions, search_restaurants
 from .weather import get_weather_forecast
 from .currency import convert_currency, get_exchange_rate
 from .web_search import web_search
+from .flights import search_real_flights
 
 __all__ = [
     "geocode_city",
@@ -15,4 +16,5 @@ __all__ = [
     "convert_currency",
     "get_exchange_rate",
     "web_search",
+    "search_real_flights",
 ]
