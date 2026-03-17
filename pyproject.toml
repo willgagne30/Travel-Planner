@@ -6,7 +6,6 @@ readme = "README.md"
 requires-python = ">=3.10,<3.13"
 
 dependencies = [
-    "amadeus>=9.0.0",
     "google-adk>=1.0.0",
     "google-genai>=1.9.0",
     "python-dotenv>=1.0.1",

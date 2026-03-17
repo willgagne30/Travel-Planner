@@ -1,128 +1,99 @@
 """
-Tool de recherche de vols réels basé sur l'API Amadeus for Developers (gratuit).
-Nécessite le package 'amadeus' et les clés API dans AMADEUS_API_KEY et AMADEUS_API_SECRET.
+Tool de recherche de vols réels basé sur l'API Aviationstack (gratuit).
+Nécessite la clé API dans AVIATIONSTACK_API_KEY.
 """
 
 import os
-from amadeus import Client, ResponseError
+import requests
 
-def get_amadeus_client():
-    """Initialise le client Amadeus avec les clés du .env"""
-    api_key = os.getenv("AMADEUS_API_KEY", "")
-    api_secret = os.getenv("AMADEUS_API_SECRET", "")
-    
-    if not api_key or not api_secret:
-        return None
-        
-    return Client(
-        client_id=api_key,
-        client_secret=api_secret,
-        hostname='test' # Utilise l'environnement de test gratuit d'Amadeus
-    )
+AVIATIONSTACK_URL = "http://api.aviationstack.com/v1/flights"
 
 def search_real_flights(
     origin_iata: str,
     destination_iata: str,
-    departure_date: str,
-    return_date: str = None,
-    adults: int = 1,
-    max_results: int = 5
+    departure_date: str = None,
+    limit: int = 10
 ) -> dict:
     """
-    Recherche de vrais vols avec horaires et prix en utilisant l'API Amadeus.
+    Recherche de vrais vols et horaires en utilisant l'API Aviationstack.
     
     Args:
         origin_iata: Code IATA de l'aéroport de départ (ex: "CDG", "JFK", "YUL").
         destination_iata: Code IATA de l'aéroport d'arrivée (ex: "HND", "LHR", "FCO").
-        departure_date: Date de départ au format YYYY-MM-DD (ex: "2024-11-15").
-        return_date: (Optionnel) Date de retour au format YYYY-MM-DD. Si None, recherche un aller-simple.
-        adults: Nombre de passagers adultes (défaut: 1).
-        max_results: Nombre maximal d'itinéraires à retourner (défaut: 5).
+        departure_date: (Optionnel) Date au format YYYY-MM-DD. N'est pas strict pour Aviationstack.
+        limit: Nombre maximal de vols à retourner (défaut: 10).
 
     Returns:
-        Un dictionnaire contenant les meilleures offres de vols trouvées (prix, compagnies, horaires),
+        Un dictionnaire contenant les vols trouvés (compagnies, statuts, horaires),
         ou un message d'erreur clair.
     """
-    client = get_amadeus_client()
-    if not client:
+    api_key = os.getenv("AVIATIONSTACK_API_KEY", "")
+    if not api_key:
         return {
-            "error": "Clés API Amadeus manquantes. L'utilisateur doit configurer AMADEUS_API_KEY et AMADEUS_API_SECRET."
+            "error": "Clé API Aviationstack manquante. L'utilisateur doit configurer AVIATIONSTACK_API_KEY dans le .env."
         }
 
     try:
         # Construction des paramètres de recherche
         params = {
-            'originLocationCode': origin_iata.upper(),
-            'destinationLocationCode': destination_iata.upper(),
-            'departureDate': departure_date,
-            'adults': adults,
-            'max': min(max_results, 10),
-            'currencyCode': 'EUR'
+            'access_key': api_key,
+            'dep_iata': origin_iata.upper(),
+            'arr_iata': destination_iata.upper(),
+            'limit': min(limit, 20)
         }
+
+        # L'API gratuite ne permet pas de filtrer proprement par date future (historique/temps réel).
+        # Mais l'agent peut comprendre la structure de la route.
+        response = requests.get(AVIATIONSTACK_URL, params=params, timeout=15)
+        response.raise_for_status()
         
-        if return_date:
-            params['returnDate'] = return_date
+        data = response.json()
+        
+        if "error" in data:
+            return {"error": f"Erreur API Aviationstack: {data['error'].get('info', 'Erreur inconnue')}"}
 
-        # Appel à l'API Amadeus Flight Offers Search
-        response = client.shopping.flight_offers_search.get(**params)
-        offers = response.data
+        flights = data.get("data", [])
 
-        if not offers:
+        if not flights:
             return {
-                "message": f"Aucun vol trouvé entre {origin_iata} et {destination_iata} "
-                           f"pour le(s) date(s) indiquée(s).",
+                "message": f"Aucun vol direct actif trouvé entre {origin_iata} et {destination_iata}.",
                 "flights": []
             }
 
         parsed_flights = []
-        for offer in offers:
-            # Prix total
-            price = offer.get("price", {}).get("total", "N/A")
-            currency = offer.get("price", {}).get("currency", "")
+        for flight in flights:
+            airline = flight.get("airline", {}).get("name", "Inconnue")
+            flight_number = flight.get("flight", {}).get("iata", "N/A")
             
-            # Parcours des séquences de vol (Aller, puis Retour)
-            itineraries = []
-            for itinerary in offer.get("itineraries", []):
-                segments = itinerary.get("segments", [])
-                
-                # Récupérer les infos du premier et dernier segment pour avoir l'horaire global
-                first_segment = segments[0]
-                last_segment = segments[-1]
-                
-                departure_time = first_segment.get("departure", {}).get("at", "")
-                arrival_time = last_segment.get("arrival", {}).get("at", "")
-                
-                # Liste des compagnies aériennes (codes)
-                carriers = [seg.get("carrierCode", "") for seg in segments]
-                carriers = list(dict.fromkeys(carriers)) # Dédupliquer
-                
-                stops = len(segments) - 1
-                
-                itineraries.append({
-                    "duration": itinerary.get("duration", "").replace("PT", ""),
-                    "departure": departure_time,
-                    "arrival": arrival_time,
-                    "stops": stops,
-                    "airlines": carriers
-                })
-
-            # Format final pour cette offre
+            dep = flight.get("departure", {})
+            arr = flight.get("arrival", {})
+            
             parsed_flights.append({
-                "price": f"{price} {currency}",
-                "outbound_flight": itineraries[0] if len(itineraries) > 0 else None,
-                "return_flight": itineraries[1] if len(itineraries) > 1 else None,
-                "bookable_seats": offer.get("numberOfBookableSeats", "N/A")
+                "airline": airline,
+                "flight_number": flight_number,
+                "status": flight.get("flight_status", "scheduled"),
+                "departure": {
+                    "airport": dep.get("airport"),
+                    "terminal": dep.get("terminal", "N/A"),
+                    "scheduled_time": dep.get("scheduled", "")
+                },
+                "arrival": {
+                    "airport": arr.get("airport"),
+                    "terminal": arr.get("terminal", "N/A"),
+                    "scheduled_time": arr.get("scheduled", "")
+                }
             })
 
         return {
-            "source": "Amadeus Flight API (Temps réel)",
+            "source": "Aviationstack API",
             "origin": origin_iata,
             "destination": destination_iata,
-            "passengers": adults,
-            "flights": parsed_flights
+            "total_found": len(parsed_flights),
+            "flights": parsed_flights,
+            "note_to_agent": "Utilisez ces vraies compagnies aériennes et routes pour construire l'itinéraire du voyageur."
         }
 
-    except ResponseError as error:
-        return {"error": f"Erreur de recherche Amadeus: {str(error)}"}
+    except requests.RequestException as e:
+        return {"error": f"Erreur de réseau Aviationstack: {str(e)}"}
     except Exception as e:
         return {"error": f"Erreur inattendue: {str(e)}"}
