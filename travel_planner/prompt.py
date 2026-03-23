@@ -71,7 +71,7 @@ Sortie Attendue : **RÈGLE CRITIQUE : Vous DEVEZ formuler une réponse complète
 Votre réponse doit OBLIGATOIREMENT être structurée ainsi :
 1. Une phrase d'introduction : "Voici les détails exacts de ce que notre Spécialiste Transport a trouvé pour vous :"
 2. LA LISTE COMPLÈTE ET DÉTAILLÉE des options de transport (transporteur, horaires, durée, escales, prix estimé, lien). Vous DEVEZ écrire manuellement cette liste dans votre message. INTERDICTION formelle de dire "Voir les résultats ci-dessus" ou de renvoyer à un affichage externe. Copiez-collez les résultats ici. Ne masquez AUCUN prix.
-3. La phrase exacte suivante : "⛔ PAUSE OBLIGATOIRE : Ces options de transport vous conviennent-elles ? Souhaitez-vous que je recherche maintenant des hébergements ?"
+3. La phrase exacte suivante : "⛔ PAUSE OBLIGATOIRE : Parmi ces options de transport, LAQUELLE préférez-vous choisir pour votre voyage (ex: l'option 1) ? Veuillez me confirmer votre choix pour que je le mémorise avant de chercher des hébergements."
 
 * Rechercher des Hébergements (Sous-agent : hotel_search_agent)
 
@@ -86,7 +86,7 @@ Sortie Attendue : **RÈGLE CRITIQUE : Vous DEVEZ formuler une réponse complète
 Votre réponse doit OBLIGATOIREMENT être structurée ainsi :
 1. Une phrase d'introduction : "Voici les détails exacts des options proposées par notre Spécialiste Hébergement :"
 2. LA LISTE COMPLÈTE ET DÉTAILLÉE des hôtels (nom, type, localisation, note, prix par nuit, prix total, équipements, liens). Vous DEVEZ écrire manuellement cette liste dans votre message. INTERDICTION formelle de dire "Voir les résultats ci-dessus". Copiez-collez les résultats ici. Ne masquez AUCUN prix.
-3. La phrase exacte suivante : "⛔ PAUSE OBLIGATOIRE : Ces hébergements vous conviennent-ils ? Souhaitez-vous que je recherche maintenant des activités et expériences à faire ?"
+3. La phrase exacte suivante : "⛔ PAUSE OBLIGATOIRE : Parmi ces hébergements, LEQUEL préférez-vous choisir pour votre séjour ? Veuillez me confirmer votre choix avant que je recherche des activités."
 
 * Découvrir les Activités et Expériences (Sous-agent : activity_search_agent)
 
@@ -101,17 +101,15 @@ Sortie Attendue : **RÈGLE CRITIQUE : Vous DEVEZ formuler une réponse complète
 Votre réponse doit OBLIGATOIREMENT être structurée ainsi :
 1. Une phrase d'introduction : "Voici les détails de la sélection de notre Spécialiste Activités :"
 2. LA LISTE COMPLÈTE ET DÉTAILLÉE des activités (nom, description, coût estimé, conseil, lien). Vous DEVEZ écrire manuellement cette liste dans votre message. INTERDICTION formelle de dire "Voir les résultats ci-dessus". Copiez-collez les résultats ici. Ne masquez AUCUN prix.
-3. La phrase exacte suivante : "⛔ PAUSE OBLIGATOIRE : Ces activités vous conviennent-elles ? Souhaitez-vous que je génère votre itinéraire complet jour par jour ?"
+3. La phrase exacte suivante : "⛔ PAUSE OBLIGATOIRE : Ces activités vous conviennent-elles ? Y en a-t-il certaines que vous voulez absolument inclure dans votre itinéraire ? Confirmez-moi vos favorites avant que je génère le planning final."
 
 * Générer l'Itinéraire de Voyage (Sous-agent : itinerary_planner_agent)
 
 Informez l'utilisateur : "🗓️ Notre Spécialiste Itinéraire assemble maintenant votre programme de voyage personnalisé..."
 Entrée :
-Le transport_search_output (depuis la clé d'état).
-Le hotel_search_output (depuis la clé d'état).
-Le activity_search_output (depuis la clé d'état).
+Les choix EXPLICITES validés par l'utilisateur lors des étapes précédentes (le vol ou train précis, l'hôtel précis, et les activités favorites).
 Les dates de voyage et préférences de l'utilisateur.
-Action : Appelez le sous-agent itinerary_planner_agent, en fournissant toutes les entrées listées.
+Action : Appelez le sous-agent itinerary_planner_agent. IMPORTANT : Transmettez-lui EXPLICITEMENT les choix validés par l'utilisateur (le transport précis, l'hôtel précis, et les activités) comme paramètres ou préférences pour qu'il construise l'itinéraire SEULEMENT avec les options choisies, pas avec toutes les options.
 Sortie Attendue : Le sous-agent itinerary_planner_agent DOIT fournir un itinéraire structuré
 jour par jour (matin, après-midi, soir) intégrant les transports, l'hébergement, les activités et les restaurants.
 L'itinéraire inclura un résumé budgétaire détaillé et des conseils pratiques.
