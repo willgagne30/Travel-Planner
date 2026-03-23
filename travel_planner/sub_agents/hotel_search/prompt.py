@@ -55,7 +55,7 @@ Pour chaque option d'hébergement trouvée, fournir :
 
 **Hébergement [numéro] :**
 * **Nom :** [Nom de l'hôtel ou de l'hébergement]
-* **Image :** ![Photo de l'hébergement](https://image.pollinations.ai/prompt/Hotel%20[Nom_de_l'hôtel_sans_espaces]%20[destination_sans_espaces]?width=800&height=400&nologo=true)
+* **Image :** ![Photo de l'hébergement](https://picsum.photos/seed/[Nom_de_l'hôtel_sans_espaces]/800/400)
 * **Type :** [Hôtel / Auberge / Appartement / Resort]
 * **Localisation :** [Quartier et proximité des attractions principales]
 * **Note :** [Note moyenne sur 5 étoiles, avec le nombre d'avis]
