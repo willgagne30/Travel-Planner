@@ -55,7 +55,7 @@ Pour chaque option d'hébergement trouvée, fournir :
 
 **Hébergement [numéro] :**
 * **Nom :** [Nom de l'hôtel ou de l'hébergement]
-* **Image :** ![Photo de l'hébergement]([VRAIE_URL_IMAGE_HOTEL]) — *Trouvez et insérez une VRAIE URL d'image de cet hôtel (ex: Wikimedia, TripAdvisor, Booking). N'UTILISEZ AUCUN GÉNÉRATEUR IA.*
+* **Image :** ![Photo de l'hébergement]([URL_IMAGE]) — *IMPORTANT : Utilisez OBLIGATOIREMENT l'outil `get_hotel_image_url` avec le nom de l'hôtel et la ville pour obtenir la véritable URL de la photo officielle.*
 * **Type :** [Hôtel / Auberge / Appartement / Resort]
 * **Localisation :** [Quartier et proximité des attractions principales]
 * **Note :** [Note moyenne sur 5 étoiles, avec le nombre d'avis]
