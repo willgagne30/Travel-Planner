@@ -2,7 +2,7 @@
 
 HOTEL_SEARCH_PROMPT = """
 Rôle de l'Agent : hotel_search
-Utilisation des Outils : Utilisez exclusivement l'outil Google Search.
+Utilisation des Outils : Utilisez "web_search" pour trouver les hôtels et "get_hotel_image_url" pour trouver leurs photos.
 
 Objectif Global : Rechercher et proposer plusieurs options d'hébergement à la destination de l'utilisateur.
 L'agent doit trouver des hôtels, auberges, appartements ou autres types d'hébergement adaptés
