@@ -55,7 +55,7 @@ Pour chaque option d'hébergement trouvée, fournir :
 
 **Hébergement [numéro] :**
 * **Nom :** [Nom de l'hôtel ou de l'hébergement]
-* **Image :** ![Photo de l'hébergement](https://picsum.photos/seed/[Nom_de_l'hôtel_sans_espaces]/800/400)
+* **Image :** ![Photo de l'hébergement]([VRAIE_URL_IMAGE_HOTEL]) — *Trouvez et insérez une VRAIE URL d'image de cet hôtel (ex: Wikimedia, TripAdvisor, Booking). N'UTILISEZ AUCUN GÉNÉRATEUR IA.*
 * **Type :** [Hôtel / Auberge / Appartement / Resort]
 * **Localisation :** [Quartier et proximité des attractions principales]
 * **Note :** [Note moyenne sur 5 étoiles, avec le nombre d'avis]
