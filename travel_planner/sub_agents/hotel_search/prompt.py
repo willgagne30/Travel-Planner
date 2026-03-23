@@ -2,7 +2,7 @@
 
 HOTEL_SEARCH_PROMPT = """
 Rôle de l'Agent : hotel_search
-Utilisation des Outils : Utilisez "web_search" pour trouver les hôtels et "get_hotel_image_url" pour trouver leurs photos.
+Utilisation des Outils : Utilisez exclusivement l'outil Google Search.
 
 Objectif Global : Rechercher et proposer plusieurs options d'hébergement à la destination de l'utilisateur.
 L'agent doit trouver des hôtels, auberges, appartements ou autres types d'hébergement adaptés
@@ -55,7 +55,7 @@ Pour chaque option d'hébergement trouvée, fournir :
 
 **Hébergement [numéro] :**
 * **Nom :** [Nom de l'hôtel ou de l'hébergement]
-* **Image :** ![Photo de l'hébergement]([URL_IMAGE]) — *IMPORTANT : Utilisez OBLIGATOIREMENT l'outil `get_hotel_image_url` avec le nom de l'hôtel et la ville pour obtenir la véritable URL de la photo officielle.*
+* **Image :** ![Photo de l'hébergement]([VRAIE_URL_IMAGE_HOTEL]) — *Trouvez et insérez une VRAIE URL d'image de cet hôtel (ex: Wikimedia, TripAdvisor, Booking). N'UTILISEZ AUCUN GÉNÉRATEUR IA.*
 * **Type :** [Hôtel / Auberge / Appartement / Resort]
 * **Localisation :** [Quartier et proximité des attractions principales]
 * **Note :** [Note moyenne sur 5 étoiles, avec le nombre d'avis]

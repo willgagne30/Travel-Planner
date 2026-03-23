@@ -3,9 +3,7 @@
 import os
 
 from google.adk import Agent
-
-from travel_planner.tools.places import get_hotel_image_url
-from travel_planner.tools.web_search import web_search
+from google.adk.tools import google_search
 
 from . import prompt
 
@@ -17,7 +15,6 @@ hotel_search_agent = Agent(
     instruction=prompt.HOTEL_SEARCH_PROMPT,
     output_key="hotel_search_output",
     tools=[
-        web_search,          # Alternative Python à google_search pour éviter l'erreur 400
-        get_hotel_image_url, # Récupération de la *véritable* photo de l'hôtel
+        google_search,       # Recherche des hôtels (prix officiels, sites de réservation)
     ],
 )
