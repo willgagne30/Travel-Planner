@@ -6,10 +6,8 @@ from google.adk import Agent
 from google.adk.tools import google_search
 
 from . import prompt
-from travel_planner.tools.geocoding import geocode_city, get_country_info
-from travel_planner.tools.web_search import web_search
 
-MODEL = os.getenv("GOOGLE_MODEL", "gemini-2.5-flash-lite")
+MODEL = os.getenv("GOOGLE_MODEL", "gemini-2.5-pro")
 
 transport_search_agent = Agent(
     model=MODEL,
@@ -17,8 +15,6 @@ transport_search_agent = Agent(
     instruction=prompt.TRANSPORT_SEARCH_PROMPT,
     output_key="transport_search_output",
     tools=[
-        web_search,          # Alternative gratuite pour rechercher vols/trains
-        geocode_city,        # Coordonnées GPS des villes de départ/arrivée
-        get_country_info,    # Infos sur le pays de destination (visa, monnaie, etc.)
+        google_search,       # Recherche de vrais vols/trains/bus (prix officiels)
     ],
 )
