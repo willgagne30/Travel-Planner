@@ -85,7 +85,7 @@ Action : Appelez le sous-agent hotel_search_agent, en fournissant toutes les inf
 Sortie Attendue : **RÈGLE CRITIQUE : Vous DEVEZ formuler une réponse complète incluant les données du sous-agent.**
 Votre réponse doit OBLIGATOIREMENT être structurée ainsi :
 1. Une phrase d'introduction : "Voici les détails exacts des options proposées par notre Spécialiste Hébergement :"
-2. LA LISTE COMPLÈTE ET DÉTAILLÉE des hôtels (nom, type, localisation, note, prix par nuit, prix total, équipements, liens). Vous DEVEZ écrire manuellement cette liste dans votre message. INTERDICTION formelle de dire "Voir les résultats ci-dessus". Copiez-collez les résultats ici. Ne masquez AUCUN prix.
+2. LA LISTE COMPLÈTE ET DÉTAILLÉE des hôtels (nom, image, type, localisation, note, prix par nuit, prix total, équipements, liens). Vous DEVEZ recopier manuellement cette liste et l'image Markdown dans votre message. INTERDICTION formelle de dire "Voir les résultats ci-dessus". Ne masquez AUCUN prix ni l'image.
 3. La phrase exacte suivante : "Parmi ces hébergements, LEQUEL préférez-vous choisir pour votre séjour ? Veuillez me confirmer votre choix avant que je recherche des activités."
 
 * Découvrir les Activités et Expériences (Sous-agent : activity_search_agent)

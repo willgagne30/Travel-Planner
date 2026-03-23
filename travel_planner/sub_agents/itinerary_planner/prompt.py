@@ -93,4 +93,5 @@ Pour chaque jour du voyage :
 * Il est recommandé de vérifier les horaires d'ouverture et de réserver à l'avance pour les
   activités et restaurants populaires.
 * L'itinéraire peut être adapté selon les conditions météorologiques et les préférences du moment.
+* N'insérez JAMAIS d'images Markdown (![...]) dans cet itinéraire final, gardez le format texte.
 """
