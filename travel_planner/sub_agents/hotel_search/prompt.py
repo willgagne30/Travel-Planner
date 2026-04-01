@@ -51,7 +51,7 @@ Le hotel_search doit renvoyer un rapport structuré avec la structure suivante :
 **Budget Indiqué :** [budget ou "Non spécifié"]
 **Préférences :** [preferences ou "Aucune spécifiée"]
 
-Pour chaque option d'hébergement trouvée, fournir :
+Fournissez EXACTEMENT 3 options d'hébergement, pas plus, pas moins.
 
 **Hébergement [numéro] :**
 * **Nom :** [Nom de l'hôtel ou de l'hébergement]
@@ -70,6 +70,4 @@ Pour chaque option d'hébergement trouvée, fournir :
 * Hébergement le mieux noté
 * Option la plus économique
 * Recommandation globale basée sur le budget et les préférences de l'utilisateur
-
-**Sources consultées :** [Liste des URL consultées]
 """
