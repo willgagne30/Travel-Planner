@@ -1,0 +1,515 @@
+"""Script to generate chat.html with correct UTF-8 encoding."""
+from pathlib import Path
+
+html = """<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planificateur de Voyage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0d1117;
+      --surface: #161b22;
+      --border:  #30363d;
+      --accent:  #3b82f6;
+      --accent2: #8b5cf6;
+      --text:    #e6edf3;
+      --muted:   #8b949e;
+      --user-bg: #1d4ed8;
+      --ai-bg:   #1e293b;
+      --radius:  16px;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      width: 100%;
+      max-width: 860px;
+      padding: 28px 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 0 20px rgba(59,130,246,0.35);
+    }
+
+    .header-text h1 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .header-text p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      margin-left: auto;
+      flex-shrink: 0;
+      box-shadow: 0 0 8px #22c55e;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* CHAT AREA */
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 860px;
+      overflow-y: auto;
+      padding: 8px 24px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    /* MESSAGES */
+    .msg {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      animation: fadeUp 0.25s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .msg.user { flex-direction: row-reverse; }
+
+    .msg.user .bubble {
+      background: var(--user-bg);
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg.agent .bubble {
+      background: var(--ai-bg);
+      border-bottom-left-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+    }
+
+    .msg.agent .avatar {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 10px rgba(59,130,246,0.3);
+    }
+
+    .msg.user .avatar { background: var(--user-bg); }
+
+    .bubble {
+      max-width: 76%;
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      line-height: 1.7;
+      font-size: 14.5px;
+    }
+
+    /* Markdown */
+    .bubble h1, .bubble h2, .bubble h3 { margin: 12px 0 6px; font-weight: 600; }
+    .bubble h1 { font-size: 17px; }
+    .bubble h2 { font-size: 15.5px; }
+    .bubble h3 { font-size: 14.5px; }
+    .bubble ul, .bubble ol { padding-left: 22px; margin: 6px 0; }
+    .bubble li { margin: 3px 0; }
+    .bubble p { margin: 6px 0; }
+    .bubble strong { font-weight: 600; }
+    .bubble em { font-style: italic; color: #93c5fd; }
+    .bubble a { color: #60a5fa; text-decoration: none; }
+    .bubble a:hover { text-decoration: underline; }
+    .bubble code { background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+    .bubble pre { background: rgba(0,0,0,0.35); padding: 12px; border-radius: 8px; overflow-x: auto; margin: 8px 0; }
+    .bubble pre code { background: none; padding: 0; }
+    .bubble table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 13.5px; }
+    .bubble th, .bubble td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
+    .bubble th { background: rgba(255,255,255,0.07); font-weight: 600; }
+    .bubble hr { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+
+    /* TYPING INDICATOR */
+    .typing { display: flex; align-items: center; gap: 5px; padding: 14px 18px; }
+    .typing span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+      display: inline-block;
+      animation: bounce 1.2s ease-in-out infinite;
+    }
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+      40% { transform: scale(1.1); opacity: 1; }
+    }
+
+    /* INPUT BAR */
+    footer {
+      width: 100%;
+      max-width: 860px;
+      padding: 16px 24px 28px;
+    }
+
+    .input-wrap {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 10px 10px 10px 18px;
+      transition: border-color 0.2s;
+    }
+
+    .input-wrap:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+    }
+
+    textarea {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 14.5px;
+      color: var(--text);
+      line-height: 1.5;
+      max-height: 160px;
+      min-height: 24px;
+    }
+
+    textarea::placeholder { color: var(--muted); }
+
+    #send-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      flex-shrink: 0;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s, opacity 0.15s;
+      box-shadow: 0 4px 14px rgba(59,130,246,0.4);
+    }
+
+    #send-btn:hover { transform: scale(1.07); }
+    #send-btn:active { transform: scale(0.95); }
+    #send-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    #send-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: white;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .footer-hint {
+      text-align: center;
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">&#9992;&#65039;</div>
+  <div class="header-text">
+    <h1>Planificateur de Voyage</h1>
+    <p>Votre assistant IA personnel pour voyager</p>
+  </div>
+  <div class="status-dot" title="Agent en ligne"></div>
+</header>
+
+<main id="chat"></main>
+
+<footer>
+  <div class="input-wrap">
+    <textarea id="input" rows="1" placeholder="Ecrivez votre message... (Entree pour envoyer)"></textarea>
+    <button id="send-btn" title="Envoyer">
+      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+  <p class="footer-hint">Propulse par Google ADK &middot; Gemini &middot; vos donnees restent locales</p>
+</footer>
+
+<script>
+var API_BASE = 'http://localhost:8080/api';
+var APP_NAME = 'travel_planner';
+var USER_ID  = 'user_' + Math.random().toString(36).slice(2, 8);
+
+var sessionId  = null;
+var isStreaming = false;
+
+var chat    = document.getElementById('chat');
+var input   = document.getElementById('input');
+var sendBtn = document.getElementById('send-btn');
+
+input.addEventListener('input', function() {
+  input.style.height = 'auto';
+  input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+});
+
+input.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+sendBtn.addEventListener('click', sendMessage);
+
+function scrollBottom() {
+  chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
+}
+
+function createBubble(role) {
+  var wrap = document.createElement('div');
+  wrap.className = 'msg ' + role;
+
+  var avatar = document.createElement('div');
+  avatar.className = 'avatar';
+  avatar.textContent = role === 'agent' ? '\\u2708\\uFE0F' : '\\uD83E\\uDDD1';
+
+  var bubble = document.createElement('div');
+  bubble.className = 'bubble';
+
+  wrap.appendChild(avatar);
+  wrap.appendChild(bubble);
+  chat.appendChild(wrap);
+  scrollBottom();
+  return bubble;
+}
+
+function showTyping() {
+  var wrap = document.createElement('div');
+  wrap.className = 'msg agent';
+  wrap.id = 'typing';
+  var av = document.createElement('div');
+  av.className = 'avatar';
+  av.textContent = '\\u2708\\uFE0F';
+  var bub = document.createElement('div');
+  bub.className = 'bubble typing';
+  bub.innerHTML = '<span></span><span></span><span></span>';
+  wrap.appendChild(av);
+  wrap.appendChild(bub);
+  chat.appendChild(wrap);
+  scrollBottom();
+}
+
+function hideTyping() {
+  var t = document.getElementById('typing');
+  if (t) t.remove();
+}
+
+function renderMarkdown(text) {
+  marked.setOptions({ breaks: true, gfm: true });
+  return marked.parse(text || '');
+}
+
+function addErrorMsg(text) {
+  var b = createBubble('agent');
+  b.textContent = text;
+  b.style.color = '#f97316';
+}
+
+function ensureSession() {
+  if (sessionId) return Promise.resolve(true);
+  return fetch(API_BASE + '/apps/' + APP_NAME + '/users/' + USER_ID + '/sessions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: '{}'
+  })
+  .then(function(res) {
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  })
+  .then(function(data) {
+    sessionId = data.id;
+    return true;
+  })
+  .catch(function(err) {
+    addErrorMsg('Impossible de contacter le serveur. Verifiez que start_chat.bat est lance.');
+    return false;
+  });
+}
+
+function extractText(evt) {
+  try {
+    if (evt && evt.content && evt.content.parts) {
+      return evt.content.parts
+        .filter(function(p) { return p.text !== undefined; })
+        .map(function(p) { return p.text; })
+        .join('');
+    }
+  } catch(e) {}
+  return '';
+}
+
+function setStreaming(val) {
+  isStreaming = val;
+  sendBtn.disabled = val;
+  input.disabled = val;
+}
+
+function sendMessage() {
+  var text = input.value.trim();
+  if (!text || isStreaming) return;
+
+  createBubble('user').textContent = text;
+  input.value = '';
+  input.style.height = 'auto';
+  setStreaming(true);
+
+  ensureSession().then(function(ok) {
+    if (!ok) { setStreaming(false); return; }
+
+    showTyping();
+
+    var payload = {
+      appName:    APP_NAME,
+      userId:     USER_ID,
+      sessionId:  sessionId,
+      newMessage: {
+        role:  'user',
+        parts: [{ text: text }]
+      },
+      streaming: true
+    };
+
+    fetch(API_BASE + '/run_sse', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(payload)
+    })
+    .then(function(res) {
+      if (!res.ok) return res.text().then(function(t) { throw new Error('HTTP ' + res.status + ': ' + t); });
+
+      hideTyping();
+      var bubble   = createBubble('agent');
+      var fullText = '';
+      var reader   = res.body.getReader();
+      var decoder  = new TextDecoder();
+      var buffer   = '';
+
+      function read() {
+        return reader.read().then(function(ref) {
+          if (ref.done) {
+            setStreaming(false);
+            return;
+          }
+
+          buffer += decoder.decode(ref.value, { stream: true });
+          var lines = buffer.split('\\n');
+          buffer = lines.pop();
+
+          lines.forEach(function(line) {
+            if (!line.startsWith('data:')) return;
+            var raw = line.slice(5).trim();
+            if (!raw || raw === '[DONE]') return;
+            try {
+              var evt = JSON.parse(raw);
+              if (evt && evt.content && evt.content.parts) {
+                var isPartial = evt.partial === true;
+                var textDelta = evt.content.parts
+                  .filter(function(p) { return p.text !== undefined; })
+                  .map(function(p) { return p.text; })
+                  .join('');
+
+                if (textDelta) {
+                  if (isPartial) {
+                    fullText += textDelta;
+                  } else {
+                    fullText = textDelta; // Final payload with full text
+                  }
+                  bubble.innerHTML = renderMarkdown(fullText);
+                  scrollBottom();
+                }
+              }
+            } catch(e) {}
+          });
+
+          return read();
+        });
+      }
+
+      return read();
+    })
+    .catch(function(err) {
+      hideTyping();
+      addErrorMsg('Erreur: ' + err.message);
+      setStreaming(false);
+    });
+  });
+}
+
+// Create session on load
+ensureSession();
+</script>
+
+</body>
+</html>"""
+
+Path("chat.html").write_text(html, encoding="utf-8")
+print("chat.html written successfully with UTF-8 encoding!")
