@@ -8,7 +8,6 @@ from google.adk.tools.agent_tool import AgentTool
 from . import prompt
 from .sub_agents.transport_search import transport_search_agent
 from .sub_agents.hotel_search import hotel_search_agent
-from .sub_agents.hotel_photo import hotel_photo_agent
 from .sub_agents.activity_search import activity_search_agent
 from .sub_agents.itinerary_planner import itinerary_planner_agent
 
@@ -29,7 +28,6 @@ travel_coordinator = LlmAgent(
     tools=[
         AgentTool(agent=transport_search_agent),
         AgentTool(agent=hotel_search_agent),
-        AgentTool(agent=hotel_photo_agent),
         AgentTool(agent=activity_search_agent),
         AgentTool(agent=itinerary_planner_agent),
     ],
