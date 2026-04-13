@@ -6,12 +6,11 @@ from google.adk.agents import LlmAgent
 from google.adk.tools.agent_tool import AgentTool
 
 from . import prompt
+from .config import MODEL
 from .sub_agents.transport_search import transport_search_agent
 from .sub_agents.hotel_search import hotel_search_agent
 from .sub_agents.activity_search import activity_search_agent
 from .sub_agents.itinerary_planner import itinerary_planner_agent
-
-MODEL = os.getenv("GOOGLE_MODEL", "gemini-2.5-pro")
 
 
 travel_coordinator = LlmAgent(

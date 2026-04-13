@@ -1,13 +1,10 @@
 """Agent hotel_search — recherche d'hébergements via Google Search + géocodage."""
 
-import os
-
 from google.adk import Agent
 from google.adk.tools import google_search
 
 from . import prompt
-
-MODEL = os.getenv("GOOGLE_MODEL", "gemini-2.5-flash")
+from travel_planner.config import MODEL_FAST as MODEL
 
 hotel_search_agent = Agent(
     model=MODEL,

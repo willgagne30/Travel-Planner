@@ -1,15 +1,14 @@
 """Agent itinerary_planner — génère un itinéraire structuré avec météo et devises."""
 
-import os
-
 from google.adk import Agent
 
 from . import prompt
+from travel_planner.config import MODEL
 from travel_planner.tools.weather import get_weather_forecast
 from travel_planner.tools.currency import convert_currency, get_exchange_rate
 from travel_planner.tools.geocoding import get_country_info
 
-MODEL = os.getenv("GOOGLE_MODEL", "gemini-2.5-pro")
+
 
 itinerary_planner_agent = Agent(
     model=MODEL,

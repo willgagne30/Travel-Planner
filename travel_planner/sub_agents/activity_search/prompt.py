@@ -1,3 +1,5 @@
+"""Prompt pour l'agent activity_search."""
+
 ACTIVITY_SEARCH_PROMPT = """
 Rôle de l'Agent : activity_search
 Utilisation des Outils : Utilisez exclusivement l'outil Google Search.

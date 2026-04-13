@@ -1,13 +1,10 @@
 """Agent activity_search — suggestions d'activités via OpenTripMap + Google Search."""
 
-import os
-
 from google.adk import Agent
 from google.adk.tools import google_search
 
 from . import prompt
-
-MODEL = os.getenv("GOOGLE_MODEL", "gemini-2.5-pro")
+from travel_planner.config import MODEL
 
 activity_search_agent = Agent(
     model=MODEL,
